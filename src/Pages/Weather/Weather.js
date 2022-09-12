@@ -173,6 +173,7 @@ const Weather = () => {
                 <div className='PlotDates'>
                     {showPlotDay} -   {showPlotDate}
                 </div>:null}
+        {/* Here is the plot for better info.  */}
             <ResponsiveContainer width="100%" height='100px' aspect={4 / 1}>
                 <LineChart data={details}>
                     <XAxis dataKey='hour' stroke='white' textAnchor= "end" sclaeToFit="true" verticalAnchor= "start" interval={0}  />
