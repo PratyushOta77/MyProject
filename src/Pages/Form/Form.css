@@ -1,0 +1,54 @@
+.formRoot {
+    flex: 4;
+    height: 95vh;
+    width: 70%;
+    overflow: hidden;
+    background-color: #d3d3d3;
+}
+.innerForm {
+ height: auto;
+ width: 70%;
+ border:2px solid black;
+ margin-top: 80px;
+ margin-left: 25vh;
+ background:#ffffff;
+ 
+}
+.edu {
+    font-family: sans-serif;
+    margin-left: 5px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-size: 22px;
+    display: block;
+    color: rgb(100, 100, 237);
+    font-weight: bold;
+}
+
+.eduWork {
+    font-family: sans-serif;
+    margin-left: 5px;
+    margin-top: 30px;
+    font-size: 19px;
+    display: block;
+    color: rgb(100, 100, 237);
+    font-weight: bold;
+}
+.jobHeader {
+    text-align: center;
+    font-size: 25px;
+    color: revert;
+    color: #6edb8d;
+    background: black;
+    height: 36px;
+}
+.editBox {
+    height: 30vh;
+    width:'70%';
+    background:'blue';
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    
+}

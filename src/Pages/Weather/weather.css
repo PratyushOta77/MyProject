@@ -1,0 +1,46 @@
+.weatherRoot {
+    flex: 4;
+    height: 95vh;
+    width: 70%;
+    overflow: hidden;
+    background-color: #59516e;
+}
+
+.headerWeather {
+    height: 120px;
+    width: 22%;
+    border: 8px solid black;
+    box-shadow: 14px 10px 42px 2px rgb(0 0 0 / 75%);
+
+}
+
+.dailyForcast{
+    height: 110px;
+    width: 90%;
+    background-color: white;
+    margin-top: 10px;
+    margin-left: 60px;
+    display: flex;
+    flex-direction: row;
+}
+
+.tabItem {
+    height: 30px;
+    width: 100%;
+    margin-top: 5px;
+}
+.tabMenu{
+    display:flex ;
+    flex-direction: row;
+}
+
+.PlotDates {
+    text-align: center;
+    border: 2px solid;
+    width: 16%;
+    height: 30px;
+    color: #26b100;
+    background: white;
+    font-size: 20px;
+    font-weight: 900;
+}
