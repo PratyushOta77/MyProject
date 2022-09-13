@@ -1,13 +1,12 @@
 import { Button } from '@material-ui/core'
 import React, { useEffect, useMemo, useState } from 'react'
-import { weatherData } from './DummyData'
 import './weather.css'
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Weather = () => {
 
+    const [weatherData, setWeatherData] = useState({})
     const [myData, setMyData] = useState({})
-    const [nowHour, setNowHour] = useState('');
     const [todayDate, setTodayDate] = useState('')
 
     const [todayDateData, setTodayDateData] = useState('')
@@ -15,24 +14,36 @@ const Weather = () => {
 
     const [details, setDetails] = useState([]);
 
-    const [tempClick , setTempClick] = useState(false)
-    const [humidClick , setHumidClick] = useState(false)
-    const [rainClick , setRainClick] = useState(false)
+    const [tempClick, setTempClick] = useState(false)
+    const [humidClick, setHumidClick] = useState(false)
+    const [rainClick, setRainClick] = useState(false)
 
-    const [topHeaderData , setTopHeaderData] = useState({})
-     
-    const [showPlotDate , setShowPlotDate] = useState('');
-    const [showPlotDay , setShowPlotDay] = useState('');
+    const [topHeaderData, setTopHeaderData] = useState({})
 
-    const [dateClicked , setDateClicked] = useState(false)
+    const [showPlotDate, setShowPlotDate] = useState('');
+    const [showPlotDay, setShowPlotDay] = useState('');
+
+    const [dateClicked, setDateClicked] = useState(false)
 
 
+    useEffect(() => {
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,relativehumidity_2m,rain`)
+            .then(res => { return res.json() })
+            .then(data => {
+                setWeatherData(data)
+            })
+            .catch(error => { console.log(error.errorMsg) })
+    }, [])
+
+    const weatherAllData = useMemo(() => {
+        return weatherData
+    }, [weatherData])
 
     useEffect(() => {
         const date = new Date();
         const currentHour = date.getHours();
 
-        const todayTime = weatherData && weatherData.hourly.time[currentHour]
+        const todayTime = weatherData.hasOwnProperty('hourly') && weatherData.hourly.time[currentHour]
         const todayDateTime = new Date(todayTime);
         setTodayDate(todayDateTime);
 
@@ -42,7 +53,8 @@ const Weather = () => {
 
         let arr = [];
         const modifiedData = {};
-        weatherData && weatherData.hourly.time.map((val, index) => {
+
+        weatherData.hasOwnProperty('hourly') && weatherData.hourly.time.map((val, index) => {
             let obj = {};
             const time = val.split("T");
             obj['hour'] = time[1];
@@ -59,7 +71,7 @@ const Weather = () => {
         console.log('The latest Data', modifiedData)
         setMyData(modifiedData)
 
-    }, [])
+    }, [weatherAllData])
 
     const myForeCastData = useMemo(() => {
         return myData;
@@ -70,8 +82,8 @@ const Weather = () => {
         const isoStandard = new Date().toISOString()
         const currentDate = isoStandard.split("T")
         const myData = myForeCastData[currentDate[0]]
-        const hourSplit = currentDate[1].split(":")[0]+":00"
-        const headerData = myData && myData.length && myData.filter((val)=>{return val.hour === hourSplit})
+        const hourSplit = currentDate[1].split(":")[0] + ":00"
+        const headerData = myData && myData.length && myData.filter((val) => { return val.hour === hourSplit })
         setTopHeaderData(headerData && headerData.length && headerData[0])
         setTodayDateData(currentDate)
         const data = Object.keys(myForeCastData)
@@ -82,16 +94,16 @@ const Weather = () => {
         setRainClick(false)
     }, [myForeCastData])
 
-    const handleDailyClick = (e , value) => {
+    const handleDailyClick = (e, value) => {
         setDetails(myForeCastData[value])
         setTempClick(true)
         setHumidClick(false)
         setRainClick(false)
         setDateClicked(true)
-       const selectedDay = new Date(value).toString().split(" ")[0] + "Day"
-       setShowPlotDay(selectedDay)
-       const selectedDate =  new Date(value).toString().split(" ").slice(1, 3).toString().replace(",","-")
-       setShowPlotDate(selectedDate)
+        const selectedDay = new Date(value).toString().split(" ")[0] + "Day"
+        setShowPlotDay(selectedDay)
+        const selectedDate = new Date(value).toString().split(" ").slice(1, 3).toString().replace(",", "-")
+        setShowPlotDate(selectedDate)
     }
 
     const handleTemperatureClick = () => {
@@ -133,56 +145,54 @@ const Weather = () => {
 
                 </div>
             </div>
-            <h3 style={{marginBottom :'3px', color:'#dde28e', fontSize:'20px', textAlign: 'center'}}>DAILY FORECAST</h3>
+            <h3 style={{ marginBottom: '3px', color: '#dde28e', fontSize: '20px', textAlign: 'center' }}>DAILY FORECAST (Click On Any Date)</h3>
             <div className='dailyForcast'>
                 {allDate && allDate.length && allDate.map((val, index) => {
-                    return <div id={index.toString()} onClick={(e) => handleDailyClick(e,val)} style={{ background:val === todayDateData[0]?'#a66e00':'#9595d8', cursor: 'pointer', margin: '2px', width: '20%', border: '2px solid black' }}>
-                        {val === todayDateData[0] ? 
-                        <div>
-                            <span style={{fontSize:'42px',marginLeft:'16px'}}>Today</span>
-                            <div style={{marginLeft:'18px',fontSize:'26px'}}>{new Date(val).toString().split(" ").slice(1, 3)}</div>
-                            
+                    return <div id={index.toString()} onClick={(e) => handleDailyClick(e, val)} style={{ background: val === todayDateData[0] ? '#a66e00' : '#9595d8', cursor: 'pointer', margin: '2px', width: '20%', border: '2px solid black' }}>
+                        {val === todayDateData[0] ?
+                            <div>
+                                <span style={{ fontSize: '42px', marginLeft: '16px' }}>Today</span>
+                                <div style={{ marginLeft: '18px', fontSize: '26px' }}>{new Date(val).toString().split(" ").slice(1, 3)}</div>
+
                             </div> :
                             <div>
-                                <span style={{fontSize:'38px',marginLeft:'14px'}}>{new Date(val).toString().split(" ")[0] + "Day"}</span>
-                                <div><span style={{marginLeft:'18px',fontSize:'26px'}}>{new Date(val).toString().split(" ").slice(1, 3)}</span></div>
+                                <span style={{ fontSize: '38px', marginLeft: '14px' }}>{new Date(val).toString().split(" ")[0] + "Day"}</span>
+                                <div><span style={{ marginLeft: '18px', fontSize: '26px' }}>{new Date(val).toString().split(" ").slice(1, 3)}</span></div>
                             </div>
                         }
                     </div>
                 })}
 
             </div>
-
+            <div className='PlotDates'>
+                {showPlotDay ? showPlotDay : new Date().toString().split(" ")[0] + "Day"} -   {showPlotDate ? showPlotDate : new Date().toString().split(" ").slice(1, 3).toString().replace(",", "-")}
+            </div>
             <div className='tabItem'>
                 <div className='tabMenu'>
-                    <Button style={{background:tempClick?'white':'',color:tempClick?'black':'',width:'50vh'}} onClick={(e) => handleTemperatureClick(e)} variant='contained' color='secondary'>
+                    <Button style={{ background: tempClick ? 'white' : '', color: tempClick ? 'black' : '', width: '50vh' }} onClick={(e) => handleTemperatureClick(e)} variant='contained' color='secondary'>
                         Temperature
                     </Button>
 
-                    <Button style={{background:humidClick?'white':'',color:humidClick?'black':'',width:'50vh'}} onClick={(e) => handleHumidClick(e)} variant='contained' color='secondary'>
+                    <Button style={{ background: humidClick ? 'white' : '', color: humidClick ? 'black' : '', width: '50vh' }} onClick={(e) => handleHumidClick(e)} variant='contained' color='secondary'>
                         Humidity
                     </Button>
-                    <Button style={{background:rainClick?'white':'',color:rainClick?'black':'',width:'50vh'}} onClick={(e) => handleRainClick(e)} variant='contained' color='secondary'>
+                    <Button style={{ background: rainClick ? 'white' : '', color: rainClick ? 'black' : '', width: '50vh' }} onClick={(e) => handleRainClick(e)} variant='contained' color='secondary'>
                         Rain
                     </Button>
 
                 </div>
             </div>
-            <div style={{marginTop:'10px'}}>
-                {dateClicked?
-                <div className='PlotDates'>
-                    {showPlotDay} -   {showPlotDate}
-                </div>:null}
-        {/* Here is the plot for better info.  */}
-            <ResponsiveContainer width="100%" height='100px' aspect={4 / 1}>
-                <LineChart data={details}>
-                    <XAxis dataKey='hour' stroke='white' textAnchor= "end" sclaeToFit="true" verticalAnchor= "start" interval={0}  />
-                    <Line type='monotone' dataKey={tempClick?'temperature':humidClick?'humid':'rain'}  stroke="#8884d8" activeDot={{r: 8}} />
-                    <Tooltip />
-                    {/* <CartesianGrid stroke='#e0dfdf'/> */}
-                </LineChart>
+            <div style={{ marginTop: '10px' }}>
+                {/* Here is the plot for better info.  */}
+                <ResponsiveContainer width="100%" height='100px' aspect={4 / 1}>
+                    <LineChart data={details}>
+                        <XAxis dataKey='hour' stroke='white' textAnchor="end" sclaeToFit="true" verticalAnchor="start" interval={0} />
+                        <Line type='monotone' dataKey={tempClick ? 'temperature' : humidClick ? 'humid' : 'rain'} stroke="#8884d8" activeDot={{ r: 8 }} isAnimationActive={false} />
+                        <Tooltip />
+                        {/* <CartesianGrid stroke='#e0dfdf'/> */}
+                    </LineChart>
 
-            </ResponsiveContainer>
+                </ResponsiveContainer>
             </div>
         </div>
     )
