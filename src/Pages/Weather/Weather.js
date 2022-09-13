@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core'
+import { Button, CircularProgress } from '@material-ui/core'
 import React, { useEffect, useMemo, useState } from 'react'
 import './weather.css'
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -24,9 +24,11 @@ const Weather = () => {
     const [showPlotDay, setShowPlotDay] = useState('');
 
     const [dateClicked, setDateClicked] = useState(false)
+    const [showLoader , setShowLoader] = useState(false)
 
 
     useEffect(() => {
+        setShowLoader(true)
         fetch(`https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,relativehumidity_2m,rain`)
             .then(res => { return res.json() })
             .then(data => {
@@ -36,6 +38,7 @@ const Weather = () => {
     }, [])
 
     const weatherAllData = useMemo(() => {
+        setShowLoader(false)
         return weatherData
     }, [weatherData])
 
@@ -128,6 +131,8 @@ const Weather = () => {
 
     return (
         <div className='weatherRoot'>
+            {!showLoader ?
+            <div>
             <div className='headerWeather'>
                 <div style={{ background: 'black', color: 'white', height: '40px' }}>{todayDate.toString()}</div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -194,6 +199,11 @@ const Weather = () => {
 
                 </ResponsiveContainer>
             </div>
+            </div> : 
+            <div style={{display:'flex', flexDirection:'row',alignItem:'center',justifyContent:'center', marginTop:'30vh'}}>
+                 <CircularProgress size={68} style={{color:'white'}}></CircularProgress> 
+            </div>}
+           
         </div>
     )
 }
